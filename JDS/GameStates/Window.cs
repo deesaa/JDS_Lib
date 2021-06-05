@@ -1,6 +1,8 @@
 ﻿using System;
 using Client.States;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using UnityEngine;
 
 namespace JDS
@@ -12,50 +14,59 @@ namespace JDS
         public WindowShowType showType = WindowShowType.Right;
         public T windowType;
 
+        public SpriteRenderer mask;
+
         public Transform container;
-        public bool IsInAnimation { private set; get; }
         
+        private TweenerCore<Vector3, Vector3, VectorOptions> _currentTween;
+
         private void Awake()
         {
             container.gameObject.SetActive(false);
             container.position = GetHiddenPosition();
             WM<T>.RegisterWindow(windowType, this);
-            
             OnAwake();
         }
-
+        
         protected virtual void OnAwake() {}
 
         public void Show()
         {
-            if(container.gameObject.activeSelf)
-                return;
-            
-            container.gameObject.SetActive(true);
-            IsInAnimation = true;
-            container.DOMove(Vector3.zero, showSpeed).SetEase(easeType).OnComplete(() =>
-            {
-                IsInAnimation = false;
-            });
-            
             OnShow();
+            
+            if (showType == WindowShowType.Center)
+            {
+                _currentTween?.Kill();
+                container.position = GetHiddenPosition();
+                container.gameObject.SetActive(true);
+                return;
+            }
+
+            container.gameObject.SetActive(true);
+            _currentTween?.Kill();
+            _currentTween = container.DOMove(Vector3.zero, showSpeed).SetEase(easeType);
+            
         }
 
         protected abstract void OnShow();
 
         public void Hide()
         {
-            if (!container.gameObject.activeSelf)
-                return;
+            OnHide();
 
-            IsInAnimation = true;
-            container.DOMove(GetHiddenPosition(), showSpeed).SetEase(easeType).OnComplete(() =>
+            if (showType == WindowShowType.Center)
             {
-                IsInAnimation = false;
+                _currentTween?.Kill();
+                container.gameObject.SetActive(false);
+                container.position = GetHiddenPosition();
+                return;
+            }
+            
+            _currentTween?.Kill();
+            _currentTween = container.DOMove(GetHiddenPosition(), showSpeed).SetEase(easeType).OnComplete(() =>
+            {
                 container.gameObject.SetActive(false);
             });
-            
-            OnShow();
         }
 
         protected abstract void OnHide();
