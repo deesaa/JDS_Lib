@@ -7,17 +7,13 @@ using UnityEngine;
 
 namespace JDS
 {
-    public abstract class Window<T, TV> : BindBehaviour<TV>, IWindow where T : Enum where TV : Enum
+    public abstract class Window<T, TV> : BindBehaviour<TV>, IWindow
     {
         public float showSpeed = 1f;
         public Ease easeType = Ease.InQuad;
         public WindowShowType showType = WindowShowType.Right;
         public T windowType;
-
-        public SpriteRenderer mask;
-
         public Transform container;
-        
         private TweenerCore<Vector3, Vector3, VectorOptions> _currentTween;
 
         private void Awake()
@@ -33,7 +29,7 @@ namespace JDS
         public void Show()
         {
             OnShow();
-            
+
             if (showType == WindowShowType.Center)
             {
                 _currentTween?.Kill();
@@ -48,7 +44,7 @@ namespace JDS
             
         }
 
-        protected abstract void OnShow();
+        protected virtual void OnShow() {}
 
         public void Hide()
         {
@@ -69,7 +65,7 @@ namespace JDS
             });
         }
 
-        protected abstract void OnHide();
+        protected virtual void OnHide() { }
 
         private Vector3 GetHiddenPosition()
         {

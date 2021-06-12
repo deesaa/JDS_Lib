@@ -9,7 +9,7 @@ namespace JDS
     /// Generic Reactive Core
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public static class GRC<T> where T : System.Enum
+    public static class GRC<T>
     {
         private static readonly Dictionary<T, object> _objects 
             = new Dictionary<T, object>();
@@ -44,12 +44,12 @@ namespace JDS
             {
                 if (_objects[key] is TV value) return value;
 #if UNITY_EDITOR
-                Debug.Log($"Value with key {key} can not be casted to {typeof(T)}, new created now with this type");
+                Debug.LogWarning($"Value with key {key} can not be casted to {typeof(T)}, new created now with this type");
 #endif
                 return CreateAndSetNew<TV>(key);
             }
 #if UNITY_EDITOR
-            Debug.Log($"Key {key} is not defined, new created now");
+            Debug.LogWarning($"Key {key} is not defined, new created now");
 #endif
             return CreateAndSetNew<TV>(key);
         }
@@ -95,7 +95,7 @@ namespace JDS
         }
     }
 
-    public readonly struct BindHandler<T> where T : Enum
+    public readonly struct BindHandler<T>
     {
         private readonly Action _action;
         private readonly T _valueType;

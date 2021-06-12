@@ -1,4 +1,4 @@
-﻿using Leopotam.Ecs;
+﻿using System.Collections.Generic;
 
 namespace JDS
 {
@@ -6,20 +6,6 @@ namespace JDS
     {
         void OnEnter();
         void OnExit();
-        void OnEvent(string name);
-    }
-
-    public abstract class GameStateEcs : IGameState
-    {
-        protected EcsWorld World { get; private set; }
-
-        public void SetWorld(EcsWorld world)
-        {
-            World = world;
-        }
-        
-        public virtual void OnEnter() { }
-        public virtual void OnExit() { }
-        public virtual void OnEvent(string name) { }
+        void StateMessage(string name);
     }
 }
