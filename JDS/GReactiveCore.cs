@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Client.ReactiveValues;
-using UnityEngine;
 
 namespace JDS
 {
@@ -11,11 +9,9 @@ namespace JDS
     /// <typeparam name="T"></typeparam>
     public static class GRC<T>
     {
-        private static readonly Dictionary<T, object> _objects 
-            = new Dictionary<T, object>();
+        private static readonly Dictionary<T, object> _objects = new Dictionary<T, object>();
         
-        private static readonly Dictionary<T, List<BindHandler<T>>> _subscriptions 
-            = new Dictionary<T, List<BindHandler<T>>>();
+        private static readonly Dictionary<T, List<BindHandler<T>>> _subscriptions = new Dictionary<T, List<BindHandler<T>>>();
 
         public static void Set(T key, object value)
         {
@@ -31,11 +27,8 @@ namespace JDS
         {
             if(_subscriptions.ContainsKey(key))
                 _subscriptions[key].ForEach(x => x.Invoke());
-
-#if UNITY_EDITOR
             else
-                Debug.Log($"Key {key} has no subscriptions");
-#endif
+                DebugLog.Log($"Key {key} has no subscriptions");
         }
 
         public static TV Get<TV>(T key)
@@ -43,14 +36,11 @@ namespace JDS
             if (_objects.ContainsKey(key))
             {
                 if (_objects[key] is TV value) return value;
-#if UNITY_EDITOR
-                Debug.LogWarning($"Value with key {key} can not be casted to {typeof(T)}, new created now with this type");
-#endif
+                DebugLog.LogWarning($"Value with key {key} can not be casted to {typeof(T)}, new created now with this type");
                 return CreateAndSetNew<TV>(key);
             }
-#if UNITY_EDITOR
-            Debug.LogWarning($"Key {key} is not defined, new created now");
-#endif
+            DebugLog.LogWarning($"Key {key} is not defined, new created now");
+            
             return CreateAndSetNew<TV>(key);
         }
 
@@ -66,7 +56,7 @@ namespace JDS
             BindHandler<T> handler = new BindHandler<T>(action, key);
 
             if (!_subscriptions.ContainsKey(key))
-                _subscriptions.Add(key, new List<BindHandler<T>>() { handler });
+                _subscriptions.Add(key, new List<BindHandler<T>> { handler });
             else
                 _subscriptions[key].Add(handler);
 
