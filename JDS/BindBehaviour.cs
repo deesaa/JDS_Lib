@@ -17,9 +17,9 @@ namespace JDS
             AfterDestroy();
         }
 
-        protected void Bind(T valueType, Action action)
+        protected void Bind(T valueType, Action<object> action, ReactiveCore<T> parent)
         {
-            _bindHandlers.Add(GRC<T>.Bind(valueType, action));
+            _bindHandlers.Add(parent.Bind(valueType, action));
         }
 
         protected virtual void AfterDestroy() { }
